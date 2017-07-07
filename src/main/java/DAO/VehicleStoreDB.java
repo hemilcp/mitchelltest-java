@@ -22,7 +22,7 @@ public class VehicleStoreDB {
 	}
 	
 	public boolean addVehicleDetails(Vehicle input){
-		if(!checkIfVehicleExists(input)){
+		if(!checkIfVehicleExists(input.id) && checkValidation(input)){
 			input.id = Id_count;
 			Id_count++;
 			vehicledb.add(input);
@@ -31,17 +31,49 @@ public class VehicleStoreDB {
 		return false;
 	}
 
-	private boolean checkIfVehicleExists(Vehicle input) {
+	private boolean checkIfVehicleExists(int id) {
 		for(int i = 0; i < vehicledb.size(); i++){
-			if(vehicledb.get(i).getMake() == input.getMake() && 
-					vehicledb.get(i).getModel() == input.getModel()
-					&& vehicledb.get(i).getYear() == input.getYear()){
+			if(vehicledb.get(i).id == id)
+				return true;
+		}
+		return false;
+	}
+
+	private boolean checkValidation(Vehicle input) {
+				if(input.getMake()!=null && input.getModel()!=null 
+					&& input.getYear() > 1949 && input.getYear() < 2051){
 				return true;
 			}
-					
+		return false;
+	}
+	
+	public Vehicle findExistingVehicleRecord(int id){
+		for(int i = 0; i < vehicledb.size(); i++){
+			if(vehicledb.get(i).id == id){
+				return vehicledb.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public boolean updateVehicleDetails(Vehicle input){
+				
+		if(this.checkIfVehicleExists(input.id)){
+					Vehicle record = this.findExistingVehicleRecord(input.id);
+					record.setMake(input.make); 
+					record.setModel(input.model);
+					record.setYear(input.year);
+					return true;
 		}
 		return false;
 	}
 	
+	public boolean deleteVehicleDetails(int id){
+		if(this.checkIfVehicleExists(id)){
+			Vehicle record = this.findExistingVehicleRecord(id);
+			return vehicledb.remove(record);
+		}
+		return false;
+	}
 	
 }
